@@ -62,7 +62,7 @@ public class AppinioSocialSharePlugin implements FlutterPlugin, MethodCallHandle
             }
         }catch (Exception e){
             Log.d("error",e.getLocalizedMessage());
-            result.success(e.getLocalizedMessage());
+            result.success(SocialShareUtil.ERROR);
         }
 
     }
@@ -71,7 +71,7 @@ public class AppinioSocialSharePlugin implements FlutterPlugin, MethodCallHandle
         activeContext = (activity != null) ? activity.getApplicationContext() : context;
         String title = call.argument("title");
         String message = call.argument("message");
-        String appId = call.argument("appId");
+        String facebookAppId = call.argument("appId");
         String imagePath = call.argument("imagePath");
         String stickerImage = call.argument("stickerImage");
         String attributionURL = call.argument("attributionURL");
@@ -94,9 +94,8 @@ public class AppinioSocialSharePlugin implements FlutterPlugin, MethodCallHandle
              case MESSENGER:
                 return socialShareUtil.shareToMessenger(message, activeContext);
             case FACEBOOK:
-                if (activity == null) return SocialShareUtil.UNKNOWN_ERROR;
-                socialShareUtil.shareToFacebook(imagePath, message, activity, result);
-                return null;
+                if (activity == null) return SocialShareUtil.ERROR;
+                return socialShareUtil.shareToFacebook(imagePath, message, activity, result);
             case WHATSAPP:
                 return socialShareUtil.shareToWhatsApp(imagePath, message, activeContext);
             case TELEGRAM:
