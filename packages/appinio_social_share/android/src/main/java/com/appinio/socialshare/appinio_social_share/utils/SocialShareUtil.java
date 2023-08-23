@@ -183,38 +183,45 @@ public class SocialShareUtil {
     }
 
 
-    public void shareToFacebook(String imagePath, String text, Activity activity, MethodChannel.Result result) {
-        FacebookSdk.sdkInitialize(activity.getApplicationContext());
-        callbackManager = callbackManager == null ? CallbackManager.Factory.create() : callbackManager;
-        ShareDialog shareDialog = new ShareDialog(activity);
-        shareDialog.registerCallback(callbackManager, new FacebookCallback<Sharer.Result>() {
-            @Override
-            public void onSuccess(Sharer.Result result1) {
-                System.out.println("---------------onSuccess");
-                result.success(SUCCESS);
+    public String shareToFacebook(String imagePath, String text, Activity activity, MethodChannel.Result result) {
+        try {
+            FacebookSdk.sdkInitialize(activity.getApplicationContext());
+            callbackManager = callbackManager == null ? CallbackManager.Factory.create() : callbackManager;
+            ShareDialog shareDialog = new ShareDialog(activity);
+            shareDialog.registerCallback(callbackManager, new FacebookCallback<Sharer.Result>() {
+                @Override
+                public void onSuccess(Sharer.Result result1) {
+                    System.out.println("---------------onSuccess");
+                    result.success(SUCCESS);
+                }
+    
+                @Override
+                public void onCancel() {
+                    result.success(ERROR_CANCELLED);
+                }
+    
+                @Override
+                public void onError(FacebookException error) {
+                    System.out.println("---------------onError");
+                    result.success(error.getLocalizedMessage());
+                }
+            });
+            File file = new File(imagePath);
+            Uri fileUri = FileProvider.getUriForFile(activity, activity.getApplicationContext().getPackageName() + ".provider", file);
+            List<SharePhoto> sharePhotos = new ArrayList<>();
+            sharePhotos.add(new SharePhoto.Builder().setImageUrl(fileUri).build());
+            SharePhotoContent content = new SharePhotoContent.Builder()
+                    .setShareHashtag(new ShareHashtag.Builder().setHashtag(text).build())
+                    .setPhotos(sharePhotos)
+                    .build();
+            if (ShareDialog.canShow(SharePhotoContent.class)) {
+                shareDialog.show(content);
+                
+                return SUCCESS;
             }
-
-            @Override
-            public void onCancel() {
-                result.success(ERROR_CANCELLED);
-            }
-
-            @Override
-            public void onError(FacebookException error) {
-                System.out.println("---------------onError");
-                result.success(error.getLocalizedMessage());
-            }
-        });
-        File file = new File(imagePath);
-        Uri fileUri = FileProvider.getUriForFile(activity, activity.getApplicationContext().getPackageName() + ".provider", file);
-        List<SharePhoto> sharePhotos = new ArrayList<>();
-        sharePhotos.add(new SharePhoto.Builder().setImageUrl(fileUri).build());
-        SharePhotoContent content = new SharePhotoContent.Builder()
-                .setShareHashtag(new ShareHashtag.Builder().setHashtag(text).build())
-                .setPhotos(sharePhotos)
-                .build();
-        if (ShareDialog.canShow(SharePhotoContent.class)) {
-            shareDialog.show(content);
+            else return error.getLocalizedMessage();
+        } catch (Exception e) {
+            return error.getLocalizedMessage();
         }
     }
 
