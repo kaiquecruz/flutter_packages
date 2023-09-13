@@ -219,9 +219,9 @@ public class SocialShareUtil {
                 
                 return SUCCESS;
             }
-            else return error.getLocalizedMessage();
+            else return UNKNOWN_ERROR;
         } catch (Exception e) {
-            return error.getLocalizedMessage();
+            return e.getLocalizedMessage();
         }
     }
 
