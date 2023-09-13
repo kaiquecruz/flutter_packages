@@ -71,7 +71,7 @@ public class AppinioSocialSharePlugin implements FlutterPlugin, MethodCallHandle
         activeContext = (activity != null) ? activity.getApplicationContext() : context;
         String title = call.argument("title");
         String message = call.argument("message");
-        String facebookAppId = call.argument("appId");
+        String appId = call.argument("appId");
         String imagePath = call.argument("imagePath");
         String stickerImage = call.argument("stickerImage");
         String attributionURL = call.argument("attributionURL");
